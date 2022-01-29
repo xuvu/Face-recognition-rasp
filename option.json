@@ -9,6 +9,7 @@
      "light_active": "Active LOW",
      "buzzer_active": "Active HIGH",
      "con_indicator_active": "Active LOW",
-     "server_address": "http://skbright.totddns.com:28006/nsc_backup/raspberrypi_communication/postReceiver.php",
-     "room_id_code": "iU053XoOEatQ8Dxe1ejIQeBHCdel1"
+     "server_address": "http://skbright.totddns.com:28006/nsc_backup",
+     "room_id_code": "iU053XoOEatQ8Dxe1ejIQeBHCdel1",
+     "threshold": "0.65"
 }

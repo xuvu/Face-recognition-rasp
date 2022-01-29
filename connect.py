@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 import file
 import shutil
@@ -9,7 +10,7 @@ from urllib.request import urlopen
 
 class Server:
     def __init__(self, postreciever, room_id_code):
-        self.postr = str(postreciever)
+        self.postr = str(postreciever)+"/raspberrypi_communication/postReceiver.php"
         self.room_id_code = room_id_code
 
         # connection status
@@ -33,7 +34,7 @@ class Server:
 
     def check_update_model(self):
         if file.get_latest_model(self.postr) == "0":
-            print("There's no model available on server")
+            print("no model on server")
             return False
         elif file.get_latest_model(self.postr) != file.get_current_model_name() or not os.path.exists(
                 "model/" + file.get_current_model_name()):
@@ -64,7 +65,7 @@ class Server:
 
     def check_update_permission(self):
         if file.get_latest_permission(self.postr) == "0":
-            print("There's no model available on server")
+            print("no permission on server")
             return False
         elif file.get_latest_permission(self.postr) != file.get_current_permission_name() or not os.path.exists(
                 "permission/" + file.get_current_permission_name()):
@@ -93,49 +94,41 @@ class Server:
         # download model
         file.download_file(model_location_on_server, "permission/")
 
-    def send_offline_log(self):
+    def send_log(self):
+        req = None
         if self.connection_status:
             with open('log.json', 'r') as data_file:
                 data = json.load(data_file)
 
             if len(data) != 0:
                 for i in range(len(data)):
-                    file.send_log(self.postr,
-                                  id_mem=data[0]["id_mem"],
-                                  id_code=data[0]["id_code"],
-                                  full_name=data[0]["full_name"],
-                                  id_room=data[0]["id_room"],
-                                  room_name=data[0]["room_name"])
+                    req = file.send_log(self.postr,
+                                        id_mem=data[0]["id_mem"],
+                                        id_code=data[0]["id_code"],
+                                        full_name=data[0]["full_name"],
+                                        id_room=data[0]["id_room"],
+                                        room_name=data[0]["room_name"],
+                                        time_stamp=data[0]["time_stamp"])
                     data.pop(0)
 
             with open('log.json', 'w') as data_file:
                 json.dump(data, data_file)
+            return req
 
-    def send_log_to_server(self, id_code):
-        if self.connection_status:
+    def save_log(self, id_code):
+        if not os.path.exists("log.json"):
             list_log = file.get_current_permission_list(self.room_id_code, str(id_code))
-            try:
-                file.send_log(self.postr,
-                              id_mem=list_log[0]["id_mem"],
-                              id_code=list_log[0]["id_code"],
-                              full_name=list_log[0]["full_name"],
-                              id_room=list_log[0]["id_room"],
-                              room_name=list_log[0]["room_name"])
-            except:
-                print("Can't send log")
+            list_log[0]["time_stamp"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # Serializing json
+            json_object = json.dumps(list_log, indent=6)
 
-        elif not self.connection_status:
-            if not os.path.exists("log.json"):
-                list_log = file.get_current_permission_list(self.room_id_code, str(id_code))
-                # Serializing json
-                json_object = json.dumps(list_log, indent=5)
-
-                # Writing to sample.json
-                with open("log.json", "w") as outfile:
-                    outfile.write(json_object)
-            else:
-                list_log = file.get_current_permission_list(self.room_id_code, str(id_code))[0]
-                self.write_json(list_log)
+            # Writing to sample.json
+            with open("log.json", "w") as outfile:
+                outfile.write(json_object)
+        else:
+            list_log = file.get_current_permission_list(self.room_id_code, str(id_code))[0]
+            list_log["time_stamp"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            self.write_json(list_log)
 
     def write_json(self, new_data, filename='log.json'):
         with open(filename, 'r+') as file:
@@ -150,7 +143,7 @@ class Server:
 
     def check_update_room_status(self):
         if file.get_latest_room_status(self.postr) == "0":
-            print("There's no model available on server")
+            print("no room stat on server")
             return False
         elif file.get_latest_room_status(self.postr) != file.get_current_name_room_status() or not os.path.exists(
                 "timeout/" + file.get_current_name_room_status()):
@@ -183,12 +176,9 @@ class Server:
 class Server_admin:
 
     def __init__(self, postreciever):
-        self.postr = str(postreciever)
-
-        # connection status
+        self.postr = str(postreciever)+"/raspberrypi_communication/postReceiver.php"
         self.connection_status = False
-
-        # download zipped file
+        self.is_connect()
         self.zip_location_on_server = self.postr.replace("postReceiver.php", "face.zip")
 
     def is_connect(self):
@@ -240,10 +230,19 @@ class Server_admin:
             file.upload_model("model/namemodel.txt", self.postr)
             file.upload_model("model/" + file.get_current_model_name(), self.postr)
         except:
-            print("Can't upload face to server")
+            print("Can't upload model to server")
 
     def get_list_for_cature(self):
         return file.get_list_capture(self.postr)
 
-# f = Server("http://skbright.totddns.com:28006/nsc_backup/raspberrypi_communication/postReceiver.php","iU053XoOEatQ8Dxe1ejIQeBHCdel1")
-# print(f.send_offline_log())
+'''
+f = Server("http://skbright.totddns.com:28006/nsc_backup","iU053XoOEatQ8Dxe1ejIQeBHCdel1")
+print(f.update_room_status())
+
+
+
+with open('log.json') as json_file:
+    json_decoded = json.load(json_file)
+    json_decoded[0]["timp_stamp"] = "123"
+    print(json_decoded[0])
+'''

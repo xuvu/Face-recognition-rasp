@@ -29,6 +29,7 @@ def get_this_room_status(room_id_code):
     except:
         print("There's no time_out list in this machine")
 
+
 def get_current_room_status_list(room_id_code, key):
     try:
         # Opening JSON file
@@ -64,14 +65,15 @@ def get_latest_room_status(link_of_postreciever_server):
     return req.text.strip()
 
 
-def send_log(link_of_postreciever_server, id_mem, id_code, full_name, id_room, room_name):
+def send_log(link_of_postreciever_server, id_mem, id_code, full_name, id_room, room_name, time_stamp):
     req = requests.post(link_of_postreciever_server,
                         data={'key': 'log',
                               'id_mem': id_mem,
                               'id_code': id_code,
                               'full_name': full_name,
                               'id_room': id_room,
-                              'room_name': room_name})
+                              'room_name': room_name,
+                              'time_stamp': time_stamp})
     # .strip() = Trimming Whitespaces
     return req.text.strip()
 
@@ -275,7 +277,7 @@ def room_identifier():
         f = open("room_identifier/name_room_id.txt", "r")
         text = f.readline().strip()
         f.close()
-        js = open("room_identifier/"+text)
+        js = open("room_identifier/" + text)
         data = json.load(js)
         return data
     except:
@@ -283,7 +285,7 @@ def room_identifier():
 
 
 def save_options(locker, unlock, light, buzzer, con_indicator, locker_active, unlock_active, light_active,
-                 buzzer_active, con_indicator_active,server_address,room_id_code):
+                 buzzer_active, con_indicator_active, server_address, room_id_code,threshold):
     # Data to be written
     dictionary = {
         "locker": locker,
@@ -297,7 +299,8 @@ def save_options(locker, unlock, light, buzzer, con_indicator, locker_active, un
         "buzzer_active": buzzer_active,
         "con_indicator_active": con_indicator_active,
         "server_address": server_address,
-        "room_id_code": room_id_code
+        "room_id_code": room_id_code,
+        "threshold":threshold
     }
 
     # Serializing json
@@ -339,7 +342,6 @@ def convert_active():
     elif options["con_indicator_active"] == "Active LOW":
         converted_option.append(False)
     return converted_option
-
 
 # arr = get_list_capture("http://skbright.totddns.com:28006/nsc_backup/raspberrypi_communication/postReceiver.php")
 # for x in range(len(arr)):

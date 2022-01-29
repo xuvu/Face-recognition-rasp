@@ -145,7 +145,7 @@ class test:
         self.red = (0, 0, 255)
         self.color_face = 0
         self.color_door = self.red
-        self.threshold = 0.65
+        self.threshold = file.read_options()["threshold"]
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.text = ""
         self.door_text = "Close"
@@ -360,7 +360,7 @@ class test:
                                 # code after the permitted face is detected **************************
 
                                 # send log to server
-                                self.server.send_log_to_server(pred[0])
+                                self.server.save_log(pred[0])
 
                                 # call for open door and turn on buzzer
                                 t_door = self.thread_door(5)
@@ -384,7 +384,7 @@ class test:
 
         def run(self):
             while True:
-                time.sleep(0.1)
+                time.sleep(0.2)
                 test.video_capture()
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     test.kill_thread = True
@@ -400,7 +400,7 @@ class test:
 
         def run(self):
             while True:
-                time.sleep(0.1)
+                time.sleep(0.2)
                 test.encode_cnn_svm()
                 if test.kill_thread:  # kill this thread
                     break
@@ -416,7 +416,7 @@ class test:
                 test.server.is_connect()
                 time.sleep(5)
                 test.update_all()
-                test.server.send_offline_log()
+                test.server.send_log()
                 if test.kill_thread:  # kill this thread
                     break
 
@@ -565,7 +565,7 @@ class OptionForm:
 
         tk.Label(pin_form, text="******************************************").grid(row=5, column=1)
 
-        tk.Label(pin_form, text="Non-Functional pin").grid(row=6, column=1)
+        tk.Label(pin_form, text="Non-Functional pins").grid(row=6, column=1)
         tk.Label(pin_form, text="Connection indicator pin").grid(row=7, column=0)
         tk.Label(pin_form, text="Light pin").grid(row=8, column=0)
         tk.Label(pin_form, text="Buzzer pin").grid(row=9, column=0)
@@ -658,7 +658,8 @@ class OptionForm:
                                   OptionForm.active_list["buzzer_active"],
                                   OptionForm.active_list["con_indicator_active"],
                                   server_ad.get(),
-                                  room_identifier.get())
+                                  room_identifier.get(),
+                                  threshold.get())
                 OptionForm.submit = True
                 pin_form.destroy()
 
@@ -674,7 +675,12 @@ class OptionForm:
         room_identifier.insert('end', self.options["room_id_code"])
         room_identifier.grid(row=12, column=1, sticky='ew', columnspan=4)
 
-        btn = tk.Button(pin_form, text="Run raspberry pi", command=get_value).grid(row=13, column=0)
+        tk.Label(pin_form, text="Threshold").grid(row=13, column=0)
+        threshold = tk.Entry(pin_form)
+        threshold.insert('end', self.options["threshold"])
+        threshold.grid(row=13, column=1, sticky='ew', columnspan=4)
+
+        btn = tk.Button(pin_form, text="Run raspberry pi", command=get_value).grid(row=14, column=0)
 
         pin_form.mainloop()
 
