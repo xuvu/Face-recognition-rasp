@@ -145,7 +145,7 @@ class test:
         self.red = (0, 0, 255)
         self.color_face = 0
         self.color_door = self.red
-        self.threshold = file.read_options()["threshold"]
+        self.threshold = float(file.read_options()["threshold"])
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.text = ""
         self.door_text = "Close"

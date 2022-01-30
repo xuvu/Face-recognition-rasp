@@ -343,21 +343,3 @@ def convert_active():
         converted_option.append(False)
     return converted_option
 
-# arr = get_list_capture("http://skbright.totddns.com:28006/nsc_backup/raspberrypi_communication/postReceiver.php")
-# for x in range(len(arr)):
-#    if arr[x]["id_code"] == "1339900662224":
-#        print("1339900662224")
-
-# download_file("http://skbright.totddns.com:28006/nsc_backup/raspberrypi_communication/postReceiver.php",os.getcwd())
-# print(get_all_current_permission_list())
-# print(get_current_permission_list(1,"id_mem"))
-# download_prep("http://gonewhich.thddns.net:7071/Upload_Download/postReceiver.php")
-# print(send_log("http://localhost/nsc_backup/raspberrypi_communication/postReceiver.php",id_room=1,id_mem=1,full_name="123 123",room_name="living"))
-# print(send_log("http://skbright.totddns.com:28006/nsc_backup/raspberrypi_communication/postReceiver.php",id_room=2,id_mem=2,full_name="korawit  kaema",room_name="123"))
-# timer()
-# r = "88dcUMx6yioCcm70il5w4dANcchov"
-# time_out = get_current_room_status_list(room_id_code=r, key="room_dclose")[0]
-# current_time = datetime.now().strftime('%H:%M:%S')
-# print(current_time)
-# print(time_out)
-# print(current_time <= time_out)

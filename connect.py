@@ -235,14 +235,4 @@ class Server_admin:
     def get_list_for_cature(self):
         return file.get_list_capture(self.postr)
 
-'''
-f = Server("http://skbright.totddns.com:28006/nsc_backup","iU053XoOEatQ8Dxe1ejIQeBHCdel1")
-print(f.update_room_status())
 
-
-
-with open('log.json') as json_file:
-    json_decoded = json.load(json_file)
-    json_decoded[0]["timp_stamp"] = "123"
-    print(json_decoded[0])
-'''
