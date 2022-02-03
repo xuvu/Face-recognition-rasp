@@ -10,7 +10,7 @@ from urllib.request import urlopen
 
 class Server:
     def __init__(self, postreciever, room_id_code):
-        self.postr = str(postreciever)+"/raspberrypi_communication/postReceiver.php"
+        self.postr = str(postreciever) + "/raspberrypi_communication/postReceiver.php"
         self.room_id_code = room_id_code
 
         # connection status
@@ -176,7 +176,7 @@ class Server:
 class Server_admin:
 
     def __init__(self, postreciever):
-        self.postr = str(postreciever)+"/raspberrypi_communication/postReceiver.php"
+        self.postr = str(postreciever) + "/raspberrypi_communication/postReceiver.php"
         self.connection_status = False
         self.is_connect()
         self.zip_location_on_server = self.postr.replace("postReceiver.php", "face.zip")
@@ -236,3 +236,5 @@ class Server_admin:
         return file.get_list_capture(self.postr)
 
 
+#server = Server("http://skbright.totddns.com:28006/nsc_backup", "296fyXYNGtjkH6BlthlKkd8D2h3gT")
+#print(server.update_room_status())

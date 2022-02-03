@@ -174,6 +174,8 @@ class test:
 
         self.kill_thread = False
 
+        self.electric_status = None
+
     def check_time(self, open_time, close_time, current_time):
         if open_time > close_time:
             if open_time <= current_time:
@@ -191,16 +193,16 @@ class test:
         if self.room_status["electric_status"] == "1":
             # code for always turn on electric
 
-            print("always turn on electric")
+            self.electric_status = "always turn on electric"
 
             # end of code
 
         elif self.room_status["electric_status"] == "0":
             # code for always turn off electric:
 
-            print("always turn off electric")
+            self.electric_status = "always turn off electric"
 
-            # end of code
+        # end of code
 
         # control by time
         elif self.room_status["electric_status"] == "2" and self.check_time(self.room_status["open_time"],
@@ -208,14 +210,14 @@ class test:
                                                                             current_time):
             # code for turn on electric is here
 
-            print("Auto mode turn on electric")
+            self.electric_status = "Auto mode turn on electric"
 
             # end of code
 
         else:
             # code for turn off electric is here
 
-            print("Auto mode turn off electric")
+            self.electric_status = "Auto mode turn off electric"
 
             # end of code
 
@@ -317,10 +319,14 @@ class test:
             cv2.putText(self.image, self.text, (self.x, self.y - 10), self.font, 0.6, self.color_face, thickness=2)
             cv2.rectangle(self.image, (self.x, self.y), (self.x + self.w, self.y + self.h), self.color_face, 2)
 
+        cv2.putText(self.image, self.room_name, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5,
+                    self.green, lineType=cv2.LINE_AA)
+
         cv2.putText(self.image, "Door:" + self.door_text, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, self.color_door,
                     lineType=cv2.LINE_AA)
-        self.image = cv2.putText(self.image, self.room_name, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.5,
-                                 self.green, lineType=cv2.LINE_AA)
+
+        cv2.putText(self.image, "Electric:" + self.electric_status, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5, self.color_door,
+                    lineType=cv2.LINE_AA)
 
     # function for encoding and classification
     def encode_cnn_svm(self):
