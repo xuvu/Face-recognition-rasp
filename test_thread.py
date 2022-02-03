@@ -174,7 +174,7 @@ class test:
 
         self.kill_thread = False
 
-        self.electric_status = None
+        self.electric_status = ""
 
     def check_time(self, open_time, close_time, current_time):
         if open_time > close_time:
@@ -193,14 +193,14 @@ class test:
         if self.room_status["electric_status"] == "1":
             # code for always turn on electric
 
-            self.electric_status = "always turn on electric"
+            self.electric_status = "on"
 
             # end of code
 
         elif self.room_status["electric_status"] == "0":
             # code for always turn off electric:
 
-            self.electric_status = "always turn off electric"
+            self.electric_status = "off"
 
         # end of code
 
@@ -210,14 +210,14 @@ class test:
                                                                             current_time):
             # code for turn on electric is here
 
-            self.electric_status = "Auto mode turn on electric"
+            self.electric_status = "Auto mode on "
 
             # end of code
 
         else:
             # code for turn off electric is here
 
-            self.electric_status = "Auto mode turn off electric"
+            self.electric_status = "Auto mode off"
 
             # end of code
 
@@ -325,7 +325,7 @@ class test:
         cv2.putText(self.image, "Door:" + self.door_text, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, self.color_door,
                     lineType=cv2.LINE_AA)
 
-        cv2.putText(self.image, "Electric:" + self.electric_status, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5, self.color_door,
+        cv2.putText(self.image, "Electric:" + self.electric_status, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0),
                     lineType=cv2.LINE_AA)
 
     # function for encoding and classification
