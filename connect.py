@@ -23,11 +23,11 @@ class Server:
         self.is_connect()
 
     def is_connect(self):
-        req = requests.post(self.postr, data={'key': 'is_connect'})
-        if req.text.strip() == "1":
+        try:
+            requests.get(self.postr, timeout=2)
             self.connection_status = True
             return True
-        else:
+        except (requests.ConnectionError, requests.Timeout) as exception:
             self.connection_status = False
             return False
 
@@ -181,11 +181,11 @@ class Server_admin:
         self.zip_location_on_server = self.postr.replace("postReceiver.php", "face.zip")
 
     def is_connect(self):
-        req = requests.post(self.postr, data={'key': 'is_connect'})
-        if req.text.strip() == "1":
+        try:
+            requests.get(self.postr, timeout=2)
             self.connection_status = True
             return True
-        else:
+        except (requests.ConnectionError, requests.Timeout) as exception:
             self.connection_status = False
             return False
 
@@ -232,4 +232,3 @@ class Server_admin:
 
     def get_list_for_cature(self):
         return file.get_list_capture(self.postr)
-
