@@ -2,10 +2,10 @@ import json
 import os
 from datetime import datetime
 
+import requests
+
 import file
 import shutil
-import urllib
-from urllib.request import urlopen
 
 
 class Server:
@@ -23,13 +23,12 @@ class Server:
         self.is_connect()
 
     def is_connect(self):
-        try:
-            urlopen(self.postr, timeout=1)
+        req = requests.post(self.postr, data={'key': 'is_connect'})
+        if req.text.strip() == "1":
             self.connection_status = True
             return True
-        except urllib.error.URLError as Error:
+        else:
             self.connection_status = False
-            print(str(Error) + " Can't connect to server")
             return False
 
     def check_update_model(self):
@@ -182,13 +181,12 @@ class Server_admin:
         self.zip_location_on_server = self.postr.replace("postReceiver.php", "face.zip")
 
     def is_connect(self):
-        try:
-            urlopen(self.postr, timeout=1)
+        req = requests.post(self.postr, data={'key': 'is_connect'})
+        if req.text.strip() == "1":
             self.connection_status = True
             return True
-        except urllib.error.URLError as Error:
+        else:
             self.connection_status = False
-            print(str(Error) + " Can't connect to server")
             return False
 
     def upload_face_to_server(self, name):
@@ -235,6 +233,3 @@ class Server_admin:
     def get_list_for_cature(self):
         return file.get_list_capture(self.postr)
 
-
-#server = Server("http://skbright.totddns.com:28006/nsc_backup", "296fyXYNGtjkH6BlthlKkd8D2h3gT")
-#print(server.update_room_status())

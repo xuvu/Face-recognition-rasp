@@ -285,7 +285,7 @@ def room_identifier():
 
 
 def save_options(locker, unlock, light, buzzer, con_indicator, locker_active, unlock_active, light_active,
-                 buzzer_active, con_indicator_active, server_address, room_id_code,threshold):
+                 buzzer_active, con_indicator_active, server_address, room_id_code, threshold):
     # Data to be written
     dictionary = {
         "locker": locker,
@@ -300,7 +300,7 @@ def save_options(locker, unlock, light, buzzer, con_indicator, locker_active, un
         "con_indicator_active": con_indicator_active,
         "server_address": server_address,
         "room_id_code": room_id_code,
-        "threshold":threshold
+        "threshold": threshold
     }
 
     # Serializing json
@@ -342,4 +342,5 @@ def convert_active():
     elif options["con_indicator_active"] == "Active LOW":
         converted_option.append(False)
     return converted_option
+
 
