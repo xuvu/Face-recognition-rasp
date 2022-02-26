@@ -291,10 +291,35 @@ class test:
 
             # end of code **********************************************************
 
+    # thread for open_door
+    class LEDlight(threading.Thread):
+        def __init__(self, sec):
+            threading.Thread.__init__(self)
+            self.sec = sec
+
+        def run(self):
+            # code for opening door is down here ***********************************
+
+            test.light_pin.on()
+
+            # end of code **********************************************************
+
+            time.sleep(self.sec)
+
+            # code for closing door is down here ***********************************
+
+            test.light_pin.off()
+
+            # end of code **********************************************************
+
+
     def ultrasonic_run(self):
         if self.ultrasonic.distanceultra() <= self.dis and not self.hold_door_status:
             self.statusdetecting = True
-            self.light_pin.on()
+            t_light = self.LEDlight(10)
+            t_light.start()
+            t_light.join()
+            
         else:
             self.statusdetecting = False
             self.light_pin.off()
