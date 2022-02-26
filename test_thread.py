@@ -38,7 +38,7 @@ class test:
 
     # update all data
     def update_all(self):
-        if self.server.connection_status:
+        if self.server.is_connect():
             if self.server.check_update_model():
                 self.server.update_model()
                 SVM_MODEL = "model/" + str(file.get_current_model_name())
@@ -319,7 +319,7 @@ class test:
             t_light = self.LEDlight(10)
             t_light.start()
             t_light.join()
-            
+
         else:
             self.statusdetecting = False
             self.light_pin.off()
