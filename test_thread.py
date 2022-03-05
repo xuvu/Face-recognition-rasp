@@ -11,18 +11,19 @@ import connect
 import file
 import tkinter as tk
 
-import components
+
+# import components
 
 
 class test:
     # setup data from current data on this machine
     def setup_data(self):
-
         # load existed permission
         self.permission_list = file.get_permission_for_this(self.room_id_code)
 
         # load existed room status
         all_room_status = file.get_this_room_status(self.room_id_code)
+        self.room_name = all_room_status["room_num"]
         self.room_status["close_time"] = all_room_status["room_dclose"]
         self.room_status["open_time"] = all_room_status["room_open"]
         self.room_status["electric_status"] = all_room_status["room_fstatus"]
@@ -50,6 +51,7 @@ class test:
                 self.server.update_room_status()
 
                 all_room_status = file.get_this_room_status(self.room_id_code)
+                self.room_name = all_room_status["room_num"]
                 self.room_status["close_time"] = all_room_status["room_dclose"]
                 self.room_status["open_time"] = all_room_status["room_open"]
                 self.room_status["electric_status"] = all_room_status["room_fstatus"]
@@ -104,14 +106,14 @@ class test:
             self.connection_indicator_pin.off()
 
     def __init__(self, post, room_id_code):
-
+        """
         self.buzzer_pin = components.control_components.output_pin("disable")
         self.locker_pin = components.control_components.output_pin("disable")
         self.light_pin = components.control_components.output_pin("disable")
         self.open_pin = components.control_components.input_pin("disable")
         self.connection_indicator_pin = components.control_components.output_pin("disable")
         self.ultrasonic = components.control_components.ultrasonic()
-
+        """
         self.server = connect.Server(str(post), str(room_id_code))
 
         self.post = post
@@ -121,12 +123,20 @@ class test:
         self.detected_face = None
 
         # variable for room's status
-        self.room_status = {"electric_status": " ", "door_status": " ", "open_time": " ", "close_time": ""}
+        self.room_status = {"electric_status": " ", "door_status": " ", "open_time": " ", "close_time": " "}
 
-        self.update_all()
-        self.setup_data()
+        try:
+            self.setup_data()
+        except Exception as e:
+            print("setup", e.__class__, "occurred.")
 
-        self.room_name = file.get_this_room_status(room_id_code)["room_num"]
+        try:
+            self.update_all()
+        except Exception as e:
+            print("update_all", e.__class__, "occurred.")
+            exit()
+
+        self.room_name = file.get_this_room_status(self.room_id_code)["room_num"]
 
         self.capture = cv2.VideoCapture(0)
         self.capture.set(cv2.WND_PROP_FULLSCREEN, 640)
@@ -227,7 +237,7 @@ class test:
 
         # code for buzzer makes sound is down here **************************
 
-        self.buzzer_pin.on()
+        # self.buzzer_pin.on()
 
         # end of code *******************************************************
 
@@ -235,7 +245,7 @@ class test:
 
         # code for turn off buzzer is down here ****************************
 
-        self.buzzer_pin.off()
+        # self.buzzer_pin.off()
         # end of code ******************************************************
 
         print("Buzzer off")
@@ -251,7 +261,7 @@ class test:
 
             # code for opening door is down here ***********************************
 
-            self.locker_pin.on()
+            # self.locker_pin.on()
 
             # end of code **********************************************************
 
@@ -259,7 +269,7 @@ class test:
 
             # code for closing door is down here ***********************************
 
-            self.locker_pin.off()
+            # self.locker_pin.off()
 
             # end of code **********************************************************
 
@@ -275,7 +285,7 @@ class test:
 
             # code for continuity open door is down here **************************
 
-            self.locker_pin.on()
+            # self.locker_pin.on()
 
             # end of code **********************************************************
 
@@ -287,11 +297,11 @@ class test:
 
             # code for continuity close door is down here **************************
 
-            self.locker_pin.off()
+            # self.locker_pin.off()
 
             # end of code **********************************************************
 
-    # thread for open_door
+    # thread for light
     class LEDlight(threading.Thread):
         def __init__(self, sec):
             threading.Thread.__init__(self)
@@ -300,7 +310,7 @@ class test:
         def run(self):
             # code for opening door is down here ***********************************
 
-            test.light_pin.on()
+            # test.light_pin.on()
 
             # end of code **********************************************************
 
@@ -308,10 +318,9 @@ class test:
 
             # code for closing door is down here ***********************************
 
-            test.light_pin.off()
+            # test.light_pin.off()
 
             # end of code **********************************************************
-
 
     def ultrasonic_run(self):
         if self.ultrasonic.distanceultra() <= self.dis and not self.hold_door_status:
@@ -322,7 +331,7 @@ class test:
 
         else:
             self.statusdetecting = False
-            self.light_pin.off()
+            # self.light_pin.off()
 
     def camera_check(self):
         if not self.capture.isOpened():
@@ -340,7 +349,7 @@ class test:
 
     # function for drawing text and rectangle on cv screen
     def drawing(self):
-        if self.statusdetecting and not self.hold_door_status:
+        if not self.hold_door_status:  # and self.statusdetecting:
             cv2.putText(self.image, self.text, (self.x, self.y - 10), self.font, 0.6, self.color_face, thickness=2)
             cv2.rectangle(self.image, (self.x, self.y), (self.x + self.w, self.y + self.h), self.color_face, 2)
 
@@ -350,12 +359,13 @@ class test:
         cv2.putText(self.image, "Door:" + self.door_text, (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.5, self.color_door,
                     lineType=cv2.LINE_AA)
 
-        cv2.putText(self.image, "Electric:" + self.electric_status, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255, 0, 0),
+        cv2.putText(self.image, "Electric:" + self.electric_status, (10, 150), cv2.FONT_HERSHEY_SIMPLEX, 1.5,
+                    (255, 0, 0),
                     lineType=cv2.LINE_AA)
 
     # function for encoding and classification
     def encode_cnn_svm(self):
-        if not self.hold_door_status and self.statusdetecting:  # check if door is opened and ultrasonic detected object
+        if not self.hold_door_status:  # and self.statusdetecting:  # check if door is opened and ultrasonic detected object
             gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
             self.rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
             self.faces = self.detector.detectMultiScale(gray, 1.3, 5)
@@ -415,12 +425,16 @@ class test:
 
         def run(self):
             while True:
-                time.sleep(0.2)
-                test.video_capture()
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    test.kill_thread = True
-                    components.clear()
-                    break
+                try:
+                    time.sleep(0.2)
+                    test.video_capture()
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        test.kill_thread = True
+                        components.clear()
+                        break
+                except Exception as e:
+                    print("thread_capture", e.__class__, "occurred.")
+
             test.capture.release()
             cv2.destroyAllWindows()
 
@@ -431,10 +445,13 @@ class test:
 
         def run(self):
             while True:
-                time.sleep(0.2)
-                test.encode_cnn_svm()
-                if test.kill_thread:  # kill this thread
-                    break
+                try:
+                    time.sleep(0.2)
+                    test.encode_cnn_svm()
+                    if test.kill_thread:  # kill this thread
+                        raise
+                except Exception as e:
+                    print("thread_encode", e.__class__, "occurred.")
 
     # thread for checking update data from server
     # and logging
@@ -444,12 +461,15 @@ class test:
 
         def run(self):
             while True:
-                test.server.is_connect()
-                time.sleep(5)
-                test.update_all()
-                test.server.send_log()
-                if test.kill_thread:  # kill this thread
-                    break
+                try:
+                    test.server.is_connect()
+                    time.sleep(5)
+                    test.update_all()
+                    test.server.send_log()
+                    if test.kill_thread:  # kill this thread
+                        break
+                except Exception as e:
+                    print("thread_update", e.__class__, "occurred.")
 
     # thread for open_door
     class thread_door(threading.Thread):
@@ -482,36 +502,41 @@ class test:
 
         def run(self):
             while True:
-                time.sleep(1)
-                test.control_electric()  # check for electric conditions
-                test.ultrasonic_run()  # update distance from ultrasonic
+                try:
+                    time.sleep(1)
+                    test.control_electric()  # check for electric conditions
+                    # test.ultrasonic_run()  # update distance from ultrasonic
 
-                if test.hold_door_status:  # keep door open
-                    test.open_door(0)
-                elif not test.hold_door_status:  # keep door close
-                    test.open_door(-1)
+                    if test.hold_door_status:  # keep door open
+                        test.open_door(0)
+                    elif not test.hold_door_status:  # keep door close
+                        test.open_door(-1)
 
-                if test.server.connection_status:  # LED connection status
-                    test.connection_indicator_pin.on()
-                else:
-                    test.connection_indicator_pin.off()
+                    """
+                    if test.server.connection_status:  # LED connection status
+                        test.connection_indicator_pin.on()
+                    else:
+                        test.connection_indicator_pin.off()
+                    
+                    
+                    if test.open_pin.get_value():  # open from button
+                        t_door = test.thread_door(5)
+                        t_buzz = test.thread_buzzer(5)
 
-                if test.open_pin.get_value():  # open from button
-                    t_door = test.thread_door(5)
-                    t_buzz = test.thread_buzzer(5)
+                        t_door.start()
+                        t_buzz.start()
 
-                    t_door.start()
-                    t_buzz.start()
-
-                    t_buzz.join()
-                    t_door.join()
-
-                if test.kill_thread:  # kill this thread
-                    break
+                        t_buzz.join()
+                        t_door.join()
+                    """
+                    if test.kill_thread:  # kill this thread
+                        break
+                except Exception as e:
+                    print("thread_control_components", e.__class__, "occurred.")
 
     def run(self):
 
-        self.setupins()
+        # self.setupins()
 
         t1 = self.thread_capture()
         t2 = self.thread_encode()
